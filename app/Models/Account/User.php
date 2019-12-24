@@ -10,6 +10,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -28,6 +29,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Collection|Activity[] $activities
+ * @property-read Collection|Match[] $objectMatches
+ * @property-read Collection|Match[] $subjectMatches
+ * @property-read Preference $preference
  * @property-read Collection|Message[] $messages
  * @property-read Collection|Participant[] $participants
  * @property-read Collection|Thread[] $threads
@@ -51,6 +56,26 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'born_on' => 'datetime:Y-m-d',
     ];
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class);
+    }
+
+    public function objectMatches(): HasMany
+    {
+        return $this->hasMany(Match::class, 'object_id');
+    }
+
+    public function subjectMatches(): HasMany
+    {
+        return $this->hasMany(Match::class, 'subject_id');
+    }
+
+    public function preference(): HasOne
+    {
+        return $this->hasOne(Preference::class);
+    }
 
     public function messages(): BelongsToMany
     {
