@@ -9,6 +9,8 @@ class ModelTable
     public const USER_MATCHES = 'user_matches';
     public const USER_PREFERENCES = 'user_preferences';
 
+    public const SESSIONS = 'sessions';
+
     public const CHAT_MESSAGES = 'chat_messages';
     public const CHAT_PARTICIPANTS = 'chat_participants';
     public const CHAT_THREADS = 'chat_threads';

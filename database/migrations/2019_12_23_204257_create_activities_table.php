@@ -21,7 +21,9 @@ class CreateActivitiesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')
                 ->index()->nullable();
-            $table->integer('ip_address')
+            $table->string('session_id')
+                ->index()->nullable();
+            $table->string('ip_address', ModelColumnLength::SESSION_IP_ADDRESS)
                 ->nullable();
             $table->float('latitude', $coordinateTotalLength, ModelColumnLength::COORDINATE_FRACTIONAL_PART)
                 ->index()->nullable();

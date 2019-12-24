@@ -18,7 +18,6 @@ class CreateThreadsTable extends Migration
             $table->bigIncrements('id');
             $table->timestamp('refreshed_at')
                 ->index()->nullable();
-            $table->softDeletes();
             $table->timestamps();
         });
     }
