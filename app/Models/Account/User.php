@@ -7,6 +7,7 @@ use App\Models\Chat\Message;
 use App\Models\Chat\Participant;
 use App\Models\Chat\Thread;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,7 +28,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin Eloquent|Notifiable|SoftDeletes
+ * @property-read Collection|Message[] $messages
+ * @property-read Collection|Participant[] $participants
+ * @property-read Collection|Thread[] $threads
+ * @mixin Eloquent
  */
 class User extends Authenticatable
 {
@@ -45,5 +49,28 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'born_on' => 'datetime:Y-m-d',
     ];
+
+    public function messages(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Message::class,
+            Participant::class,
+            'user_id',
+            'id',
+            'id',
+            'participant_id',
+            );
+    }
+
+    public function participants(): HasMany
+    {
+        return $this->hasMany(Participant::class);
+    }
+
+    public function threads(): BelongsToMany
+    {
+        return $this->belongsToMany(Thread::class, Participant::class);
+    }
 }
