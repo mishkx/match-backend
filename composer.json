@@ -1,7 +1,13 @@
 {
-    "name": "laravel/laravel",
+    "name": "mishkx/match",
+    "authors": [
+        {
+            "name": "Mihkail Pichushkin",
+            "email": "pi4ushkin@gmail.com"
+        }
+    ],
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "Match service.",
     "keywords": [
         "framework",
         "laravel"
