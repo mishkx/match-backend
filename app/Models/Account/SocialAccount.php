@@ -7,22 +7,24 @@ use App\Constants\ModelTable;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
  * @property int|null $user_id
- * @property int|null $age_from
- * @property int|null $age_to
- * @property int|null $max_distance
- * @property int|string $gender
+ * @property string|null $provider
+ * @property string|null $provider_user_id
+ * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user
  * @mixin Eloquent
  */
-class Preference extends Model
+class SocialAccount extends Model
 {
-    protected $table = ModelTable::USER_PREFERENCES;
+    use SoftDeletes;
+
+    protected $table = ModelTable::USER_SOCIAL_ACCOUNTS;
 
     public function user(): BelongsTo
     {

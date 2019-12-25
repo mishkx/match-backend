@@ -2,6 +2,7 @@
 
 namespace App\Models\Account;
 
+use App\Base\Fillable;
 use App\Constants\ModelTable;
 use App\Models\Chat\Message;
 use App\Models\Chat\Participant;
@@ -40,13 +41,9 @@ use Illuminate\Support\Carbon;
  */
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes;
+    use Notifiable, SoftDeletes, Fillable;
 
     protected $table = ModelTable::USERS;
-
-    protected $fillable = [
-        'name', 'email', 'password',
-    ];
 
     protected $hidden = [
         'password', 'remember_token',
@@ -56,6 +53,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'born_on' => 'datetime:Y-m-d',
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->setFillable();
+        parent::__construct($attributes);
+    }
 
     public function activities(): HasMany
     {

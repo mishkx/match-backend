@@ -2,10 +2,10 @@
 
 namespace App\Models\Chat;
 
+use App\Base\Model;
 use App\Constants\ModelTable;
 use App\Models\Account\User;
 use Eloquent;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;

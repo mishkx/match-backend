@@ -19,13 +19,17 @@
         "guzzlehttp/guzzle": "^6.5",
         "laravel/framework": "^6.2",
         "laravel/passport": "^8.0",
-        "laravel/tinker": "^2.0"
+        "laravel/socialite": "^4.3",
+        "laravel/tinker": "^2.0",
+        "socialiteproviders/manager": "^3.4",
+        "socialiteproviders/vkontakte": "^4.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
         "barryvdh/laravel-ide-helper": "^2.6",
         "facade/ignition": "^1.4",
         "fzaninotto/faker": "^1.4",
+        "laravel/ui": "^1.1",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
         "phpunit/phpunit": "^8.0"

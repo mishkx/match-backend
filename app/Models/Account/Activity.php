@@ -2,10 +2,10 @@
 
 namespace App\Models\Account;
 
+use App\Base\Model;
 use App\Constants\ModelTable;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**

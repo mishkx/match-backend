@@ -8,6 +8,7 @@ class ModelTable
     public const USER_ACTIVITIES = 'user_activities';
     public const USER_MATCHES = 'user_matches';
     public const USER_PREFERENCES = 'user_preferences';
+    public const USER_SOCIAL_ACCOUNTS = 'user_social_accounts';
 
     public const SESSIONS = 'sessions';
 
