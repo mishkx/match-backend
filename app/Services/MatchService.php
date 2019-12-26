@@ -73,7 +73,12 @@ class MatchService implements MatchContract
                             ->whereDoesntLike()
                             ->whereObjectId($user->id);
                     });
-            })
+            });
+    }
+
+    public function getPreferredNewUsersWithRandomOrderQuery(User $user)
+    {
+        return $this->getPreferredNewUsersQuery($user)
             ->orderByRaw(
                 'IF(('
                 . Match::whereObjectId($user->id)
@@ -88,7 +93,7 @@ class MatchService implements MatchContract
 
     public function getPreferredNewUsersWithRecentActivityQuery(User $user)
     {
-        return $this->getPreferredNewUsersQuery($user)
+        return $this->getPreferredNewUsersWithRandomOrderQuery($user)
             ->whereHas('state', function ($query) use ($user) {
                 /** @var State $query */
                 $query->whereRecentlyPresent();

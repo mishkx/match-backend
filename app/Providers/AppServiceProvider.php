@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Contracts\Services\AccountContract;
 use App\Contracts\Services\MatchContract;
 use App\Contracts\Services\SocialiteContract;
+use App\Helpers;
 use App\Services\AccountService;
 use App\Services\MatchService;
 use App\Services\SocialiteService;
@@ -33,9 +34,7 @@ class AppServiceProvider extends ServiceProvider
     public function registerQueryBuilderMacro()
     {
         \Illuminate\Database\Query\Builder::macro('toRawSql', function () {
-            return array_reduce($this->getBindings(), function ($sql, $binding) {
-                return preg_replace('/\?/', is_numeric($binding) ? $binding : "'" . $binding . "'", $sql, 1);
-            }, $this->toSql());
+            return Helpers::applySqlQueryBindings($this->toSql(), $this->getBindings());
         });
         \Illuminate\Database\Eloquent\Builder::macro('toRawSql', function () {
             return $this->getQuery()->toRawSql();

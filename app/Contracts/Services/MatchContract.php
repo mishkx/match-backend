@@ -25,6 +25,8 @@ interface MatchContract
      */
     public function getPreferredNewUsersQuery(User $user);
 
+    public function getPreferredNewUsersWithRandomOrderQuery(User $user);
+
     /**
      * Запрос для получения подходящих по предпочтениям новых, ранее не оцененных пользователей,
      * которые посещали сервис в недавнее время.
