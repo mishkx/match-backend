@@ -20,7 +20,9 @@ use Eloquent;
 use Illuminate\Support\Carbon;
 
 /**
- * @method static Builder|$this whereAgeBetween($ageFrom, $ageTo)
+ * @method static Builder|self whereAgeBetween($ageFrom, $ageTo)
+ * @method static Builder|self whereGender($gender)
+ * @method static Builder|self whereHasMatches($userId)
  * @property int $id
  * @property string $name
  * @property string $email
@@ -112,9 +114,41 @@ class User extends Authenticatable
      */
     public function scopeWhereAgeBetween($query, $ageFrom, $ageTo)
     {
-        return $this->whereRaw("TIMESTAMPDIFF(YEAR, born_on, CURDATE()) BETWEEN ? AND ?", [
+        return $query->whereRaw("TIMESTAMPDIFF(YEAR, born_on, CURDATE()) BETWEEN ? AND ?", [
             $ageFrom,
             $ageTo,
         ]);
+    }
+
+    /**
+     * @param self $query
+     * @param string $gender
+     * @return mixed
+     */
+    public function scopeWhereGender($query, $gender)
+    {
+        return $query->where('gender', $gender);
+    }
+
+    /**
+     * @param self $query
+     * @param $userId
+     * @return mixed
+     */
+    public function scopeWhereHasMatches($query, $userId)
+    {
+        return $query
+            ->whereHas('subjectMatches', function ($query) use ($userId) {
+                /** @var Match $query */
+                $query
+                    ->whereIsLiked()
+                    ->whereObjectId($userId);
+            })
+            ->whereHas('objectMatches', function ($query) use ($userId) {
+                /** @var Match $query */
+                $query
+                    ->whereIsLiked()
+                    ->whereSubjectId($userId);
+            });
     }
 }

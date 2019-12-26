@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Contracts\Services\AccountContract;
+use App\Contracts\Services\ChatContract;
 use App\Contracts\Services\MatchContract;
 use App\Contracts\Services\SocialiteContract;
 use App\Helpers;
 use App\Services\AccountService;
+use App\Services\ChatService;
 use App\Services\MatchService;
 use App\Services\SocialiteService;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
     private function registerServices()
     {
         $this->app->bind(AccountContract::class, AccountService::class);
+        $this->app->bind(ChatContract::class, ChatService::class);
         $this->app->bind(MatchContract::class, MatchService::class);
         $this->app->bind(SocialiteContract::class, SocialiteService::class);
     }

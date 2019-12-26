@@ -30,7 +30,7 @@ class MatchService implements MatchContract
                     $user->preference->max_distance * UserConstants::DISTANCE_MULTIPLIER
                 );
             })
-            ->where('gender', $user->preference->gender)
+            ->whereGender($user->preference->gender)
             ->where('id', '!=', $user->id)
             ->with([
                 'state' => function ($query) use ($user) {
@@ -103,18 +103,7 @@ class MatchService implements MatchContract
     public function getMatchedUsersQuery(User $user)
     {
         return $this->model
-            ->whereHas('subjectMatches', function ($query) use ($user) {
-                /** @var Match $query */
-                $query
-                    ->whereIsLiked()
-                    ->whereObjectId($user->id);
-            })
-            ->whereHas('objectMatches', function ($query) use ($user) {
-                /** @var Match $query */
-                $query
-                    ->whereIsLiked()
-                    ->whereSubjectId($user->id);
-            })
+            ->whereHasMatches($user->id)
             ->orderByDesc(
                 Match::whereSubjectId($user->id)
                     ->whereColumn('object_id', ModelTable::USERS . '.id')

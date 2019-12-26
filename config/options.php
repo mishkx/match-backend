@@ -28,4 +28,20 @@ return [
          */
         'renewalPeriod' => env('MATCH_RENEWAL_PERIOD', 365),
     ],
+
+    'chat' => [
+        /*
+         * Количество чатов, которые будут загружаться за один запрос.
+         */
+        'threads' => [
+            'limit' => env('CHAT_THREADS_LIMIT', 20),
+        ],
+
+        /*
+         * Количество сообщений, которые будут загружаться за один запрос.
+         */
+        'messages' => [
+            'limit' => env('CHAT_MESSAGES_LIMIT', 50),
+        ],
+    ],
 ];

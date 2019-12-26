@@ -236,6 +236,7 @@ return [
         'AccountService' => App\Facades\Services\AccountFacade::class,
         'SocialiteService' => App\Facades\Services\SocialiteFacade::class,
         'MatchService' => App\Facades\Services\MatchFacade::class,
+        'ChatService' => App\Facades\Services\ChatFacade::class,
     ],
 
 ];
