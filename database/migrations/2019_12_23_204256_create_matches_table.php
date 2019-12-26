@@ -25,6 +25,7 @@ class CreateMatchesTable extends Migration
             $table->timestamp('marked_at')
                 ->index()->nullable();
 
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('subject_id')

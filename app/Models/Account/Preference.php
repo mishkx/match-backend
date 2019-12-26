@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $age_from
  * @property int|null $age_to
  * @property int|null $max_distance
- * @property int|string $gender
+ * @property string|null $gender
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user

@@ -16,6 +16,7 @@
     "require": {
         "php": "^7.2",
         "fideloper/proxy": "^4.0",
+        "grimzy/laravel-mysql-spatial": "^2.2",
         "guzzlehttp/guzzle": "^6.5",
         "laravel/framework": "^6.2",
         "laravel/passport": "^8.0",

@@ -19,11 +19,11 @@ class CreatePreferencesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')
                 ->index()->nullable();
-            $table->smallInteger('age_from')
+            $table->unsignedSmallInteger('age_from')
                 ->index()->nullable();
-            $table->smallInteger('age_to')
+            $table->unsignedSmallInteger('age_to')
                 ->index()->nullable();
-            $table->smallInteger('max_distance')
+            $table->unsignedSmallInteger('max_distance')
                 ->index()->nullable();
             $table->string('gender', ModelColumnLength::USER_GENDER)
                 ->index()->nullable();

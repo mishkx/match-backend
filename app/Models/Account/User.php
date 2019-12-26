@@ -8,6 +8,7 @@ use App\Models\Chat\Message;
 use App\Models\Chat\Participant;
 use App\Models\Chat\Thread;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,6 +20,7 @@ use Eloquent;
 use Illuminate\Support\Carbon;
 
 /**
+ * @method static Builder|$this whereAgeBetween($ageFrom, $ageTo)
  * @property int $id
  * @property string $name
  * @property string $email
@@ -30,10 +32,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection|Activity[] $activities
  * @property-read Collection|Match[] $objectMatches
  * @property-read Collection|Match[] $subjectMatches
  * @property-read Preference $preference
+ * @property-read State $state
  * @property-read Collection|Message[] $messages
  * @property-read Collection|Participant[] $participants
  * @property-read Collection|Thread[] $threads
@@ -60,11 +62,6 @@ class User extends Authenticatable
         parent::__construct($attributes);
     }
 
-    public function activities(): HasMany
-    {
-        return $this->hasMany(Activity::class);
-    }
-
     public function objectMatches(): HasMany
     {
         return $this->hasMany(Match::class, 'object_id');
@@ -78,6 +75,11 @@ class User extends Authenticatable
     public function preference(): HasOne
     {
         return $this->hasOne(Preference::class);
+    }
+
+    public function state(): HasOne
+    {
+        return $this->hasOne(State::class);
     }
 
     public function messages(): BelongsToMany
@@ -100,5 +102,19 @@ class User extends Authenticatable
     public function threads(): BelongsToMany
     {
         return $this->belongsToMany(Thread::class, Participant::class);
+    }
+
+    /**
+     * @param self $query
+     * @param int $ageFrom
+     * @param int $ageTo
+     * @return mixed
+     */
+    public function scopeWhereAgeBetween($query, $ageFrom, $ageTo)
+    {
+        return $this->whereRaw("TIMESTAMPDIFF(YEAR, born_on, CURDATE()) BETWEEN ? AND ?", [
+            $ageFrom,
+            $ageTo,
+        ]);
     }
 }

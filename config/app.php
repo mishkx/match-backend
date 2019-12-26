@@ -168,6 +168,7 @@ return [
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         SocialiteProviders\Manager\ServiceProvider::class,
+        Grimzy\LaravelMysqlSpatial\SpatialServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -234,6 +235,7 @@ return [
 
         'AccountService' => App\Facades\Services\AccountFacade::class,
         'SocialiteService' => App\Facades\Services\SocialiteFacade::class,
+        'MatchService' => App\Facades\Services\MatchFacade::class,
     ],
 
 ];
