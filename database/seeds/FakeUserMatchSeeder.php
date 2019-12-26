@@ -31,9 +31,8 @@ class FakeUserMatchSeeder extends Seeder
                 ->inRandomOrder()
                 ->first();
 
-            $continue = !!$user;
-
             if (!$user) {
+                $continue = false;
                 return;
             }
 
@@ -42,7 +41,8 @@ class FakeUserMatchSeeder extends Seeder
                 ->limit($this->faker()->numberBetween(1, self::USER_MAX_MATCHES))
                 ->get();
 
-            if (!$objects) {
+            if (!$objects->count()) {
+                $continue = false;
                 return;
             }
 
