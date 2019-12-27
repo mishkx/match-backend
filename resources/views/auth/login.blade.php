@@ -11,6 +11,8 @@
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
+                        @include('auth.error')
+
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
@@ -41,7 +43,7 @@
                         <div class="form-group row">
                             <div class="col-md-6 offset-md-4">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                                    <input class="form-check-input" checked="checked" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
 
                                     <label class="form-check-label" for="remember">
                                         {{ __('Remember Me') }}
@@ -64,16 +66,6 @@
                                 @endif
                             </div>
                         </div>
-
-                        @if (session('error'))
-                            <div class="form-group row">
-                                <div class="col-md-6 offset-md-4">
-                                    <span class="invalid-feedback d-block" role="alert">
-                                        <strong>{{ session('error') }}</strong>
-                                    </span>
-                                </div>
-                            </div>
-                        @endif
                     </form>
                 </div>
             </div>

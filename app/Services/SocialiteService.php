@@ -43,11 +43,10 @@ class SocialiteService implements SocialiteContract
         $user = AccountService::getByEmail($providerUser->getEmail());
 
         if (!$user) {
-            $user = AccountService::create([
-                'email' => $providerUser->getEmail(),
-                'name' => $providerUser->getName(),
-                'password' => md5(rand()),
-            ]);
+            $user = AccountService::registerWithoutPassword(
+                $providerUser->getName(),
+                $providerUser->getEmail()
+            );
         }
 
         $socialAccount->user()->associate($user);

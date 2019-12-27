@@ -11,4 +11,6 @@ class UserConstants
     public const GENDER_FEMALE = 'f';
 
     public const DISTANCE_MULTIPLIER = 1000;
+
+    public const MIN_PASSWORD_LENGTH = 8;
 }

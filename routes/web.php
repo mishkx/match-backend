@@ -18,8 +18,13 @@ Route::group(['prefix' => 'oauth', 'as' => 'oauth.', 'middleware' => ['guest', '
         ->name('callback')->where('provider', config('options.oauth.services'));
 });
 
-Route::get('/', function () {
-    return view('welcome');
+Auth::routes();
+
+Route::group(['middleware' => ['auth', 'throttle']], function () {
+    Route::get('password/save', 'Auth\SavePasswordController@showForm')->name('password.save');
+    Route::post('password/save', 'Auth\SavePasswordController@savePassword');
 });
 
-Auth::routes();
+Route::get('/', function () {
+    return view('welcome');
+})->middleware(['user.password.missed']);

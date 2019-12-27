@@ -4,12 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Contracts\Services\AccountContract;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\SavePasswordRequest;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RedirectsUsers;
-use Illuminate\Support\Facades\Hash;
 
-class RegisterController extends Controller
+class SavePasswordController extends Controller
 {
     use RedirectsUsers;
 
@@ -19,23 +18,17 @@ class RegisterController extends Controller
 
     public function __construct(AccountContract $accountService)
     {
-        $this->middleware('guest');
         $this->accountService = $accountService;
     }
 
-    public function showRegistrationForm()
+    public function showForm()
     {
-        return view('auth.register');
+        return view('auth.passwords.save');
     }
 
-    public function register(RegisterRequest $request)
+    public function savePassword(SavePasswordRequest $request)
     {
-        $this->accountService->registerAndLogin(
-            $request->get('name'),
-            $request->get('email'),
-            $request->get('password'),
-            $request->get('remember'),
-        );
+        $this->accountService->updatePassword($request->get('password'));
         return redirect($this->redirectPath());
     }
 }

@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $remember_token
+ * @property boolean $password_is_set
  * @property string|null $gender
  * @property Carbon|null $born_on
  * @property Carbon|null $deleted_at
@@ -55,6 +56,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password_is_set' => 'boolean',
         'born_on' => 'datetime:Y-m-d',
     ];
 
