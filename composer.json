@@ -15,6 +15,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
+        "darkaonline/l5-swagger": "^6.0",
         "fideloper/proxy": "^4.0",
         "grimzy/laravel-mysql-spatial": "^2.2",
         "guzzlehttp/guzzle": "^6.5",

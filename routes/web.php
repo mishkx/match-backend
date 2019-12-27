@@ -11,6 +11,8 @@
 |
 */
 
+Auth::routes();
+
 Route::group(['prefix' => 'oauth', 'as' => 'oauth.', 'middleware' => ['guest', 'throttle']], function () {
     Route::get('/{provider}', 'Auth\SocialiteController@redirectToProvider')
         ->name('login')->where('provider', config('options.oauth.services'));
@@ -18,13 +20,20 @@ Route::group(['prefix' => 'oauth', 'as' => 'oauth.', 'middleware' => ['guest', '
         ->name('callback')->where('provider', config('options.oauth.services'));
 });
 
-Auth::routes();
-
 Route::group(['middleware' => ['auth', 'throttle']], function () {
     Route::get('password/save', 'Auth\SavePasswordController@showForm')->name('password.save');
     Route::post('password/save', 'Auth\SavePasswordController@savePassword');
 });
 
-Route::get('/', function () {
-    return view('welcome');
-})->middleware(['user.password.missed']);
+Route::group(['middleware' => ['auth', 'user.password.missed', 'throttle']], function () {
+    Route::get('/', function () {
+        return view('welcome');
+    });
+});
+
+Route::group(['prefix' => 'api/v1', 'as' => 'api.v1.'], function () {
+    Route::group(['prefix' => 'docs', 'as' => 'docs.'], function () {
+        Route::get('redoc', 'DocsController@redoc')->name('redoc');
+        Route::get('swagger', 'DocsController@swagger')->name('swagger');
+    });
+});
