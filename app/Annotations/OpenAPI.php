@@ -11,10 +11,6 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Server(
- *     url="{appUrl}",
- *     @OA\ServerVariable(
- *          serverVariable="appUrl",
- *          default=APP_URL,
- *     ),
+ *     url=APP_URL,
  * )
  */
