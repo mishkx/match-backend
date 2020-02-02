@@ -3,6 +3,8 @@
 namespace App\Contracts\Services;
 
 use App\Models\Account\User;
+use App\Models\Chat\Participant;
+use App\Models\Chat\Thread;
 use Illuminate\Database\Eloquent\Builder;
 
 interface ChatContract
@@ -11,17 +13,15 @@ interface ChatContract
 
     public function getAvailableThreadsWithLatestMessageQuery(User $user);
 
-    public function getThreadMessagesQuery(User $user, $threadId);
+    public function paginateThreads(User $user, int $fromItemId = null);
 
-    /**
-     * @param Builder $query
-     * @param int|null $fromItemId
-     * @param int $limit
-     * @return mixed
-     */
-    public function paginateLatestItems($query, $fromItemId, $limit);
+    public function paginateMessages(User $user, int $toUserId, int $fromMessageId = null);
 
-    public function paginateThreads($fromItemId);
+    public function refreshParticipant(Participant $participant);
 
-    public function paginateMessages($fromItemId, $threadId);
+    public function refreshThread(Thread $thread);
+
+    public function getParticipant(int $fromUserId, int $toUserId);
+
+    public function createMessage(int $fromUserId, int $toUserId, string $content, string $token, string $sentAt);
 }
