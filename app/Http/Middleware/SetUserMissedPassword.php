@@ -2,15 +2,15 @@
 
 namespace App\Http\Middleware;
 
-use AccountService;
 use Closure;
 use Lang;
+use AuthService;
 
 class SetUserMissedPassword
 {
     public function handle($request, Closure $next)
     {
-        $user = AccountService::user();
+        $user = AuthService::user();
 
         if ($user && !$user->password_is_set) {
             return redirect()
