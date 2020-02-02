@@ -23,6 +23,11 @@ class AccountService implements AccountContract
         return Hash::make($password);
     }
 
+    public function query()
+    {
+        return $this->model;
+    }
+
     public function id()
     {
         return $this->guard()->id();
@@ -70,6 +75,11 @@ class AccountService implements AccountContract
     public function registerWithoutPassword($name, $email)
     {
         return $this->register($name, $email, Str::random(), false);
+    }
+
+    public function getById($id)
+    {
+        return $this->model->find($id);
     }
 
     public function getByEmail($email)

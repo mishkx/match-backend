@@ -8,6 +8,8 @@ use Illuminate\Contracts\Auth\StatefulGuard;
 
 interface AccountContract
 {
+    public function query();
+
     public function id();
 
     /**
@@ -29,6 +31,8 @@ interface AccountContract
     public function registerAndLogin($name, $email, $password, $remember = false);
 
     public function registerWithoutPassword($name, $email);
+
+    public function getById($id);
 
     public function getByEmail($email);
 
