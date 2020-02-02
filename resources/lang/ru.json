@@ -1,0 +1,7 @@
+{
+    "Please set password.": "Пожалуйста, установите пароль.",
+    "Unable to authenticate. Please try again.": "Неудачная попытка авторизации. Пожалуйста, попробуйте снова.",
+    "You can't add more than :count photos.": "Вы не можете добавить более :count фотографий.",
+    "We are sorry, user not found.": "Сожалеем, но данный пользователь не найден в системе.",
+    "You can't send a message to this user": "Вы не можете отправить сообщение данному пользователю."
+}
