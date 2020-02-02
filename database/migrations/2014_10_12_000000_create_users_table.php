@@ -28,7 +28,10 @@ class CreateUsersTable extends Migration
                 ->index()->nullable();
             $table->date('born_on')
                 ->index()->nullable();
-            $table->softDeletes();
+            $table->text('description')
+                ->nullable();
+            $table->softDeletes()
+                ->index();
             $table->timestamps();
         });
     }

@@ -24,7 +24,8 @@ class CreateSocialAccountsTable extends Migration
             $table->string('provider_user_id')
                 ->index()->nullable();
 
-            $table->softDeletes();
+            $table->softDeletes()
+                ->index();
             $table->timestamps();
 
             $table->foreign('user_id')

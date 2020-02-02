@@ -32,6 +32,8 @@ class CreateStateTable extends Migration
 
             $table->foreign('user_id')
                 ->references('id')->on(ModelTable::USERS);
+
+            $table->index('updated_at');
         });
     }
 

@@ -20,8 +20,15 @@ class CreateMessagesTable extends Migration
                 ->index()->nullable();
             $table->text('content')
                 ->nullable();
+            $table->string('token')
+                ->index()->nullable();
+            $table->timestamp('sent_at')
+                ->nullable();
+            $table->timestamp('edited_at')
+                ->nullable();
 
-            $table->softDeletes();
+            $table->softDeletes()
+                ->index();
             $table->timestamps();
 
             $table->foreign('participant_id')

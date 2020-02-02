@@ -22,8 +22,9 @@ class CreateParticipantsTable extends Migration
                 ->index()->nullable();
 
             $table->timestamp('visited_at')
-                ->nullable();
-            $table->softDeletes();
+                ->index()->nullable();
+            $table->softDeletes()
+                ->index();
             $table->timestamps();
 
             $table->foreign('thread_id')

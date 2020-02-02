@@ -22,11 +22,22 @@ class CreateMatchesTable extends Migration
                 ->index()->nullable();
             $table->boolean('is_liked')
                 ->index()->default(false);
-            $table->timestamp('marked_at')
+            $table->boolean('is_visited')
+                ->default(false);
+            $table->timestamp('chosen_at')
                 ->index()->nullable();
+            $table->timestamp('visited_at')
+                ->nullable();
 
-            $table->softDeletes();
+            $table->softDeletes()
+                ->index();
             $table->timestamps();
+
+            $table->index([
+                'subject_id',
+                'object_id',
+                'is_liked',
+            ]);
 
             $table->foreign('subject_id')
                 ->references('id')->on(ModelTable::USERS);
