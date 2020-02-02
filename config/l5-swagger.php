@@ -233,5 +233,9 @@ return [
      */
     'constants' => [
         'APP_URL' => config('app.url'),
+        'USER_GENDER_MALE' => \App\Constants\UserConstants::GENDER_MALE,
+        'USER_GENDER_FEMALE' => \App\Constants\UserConstants::GENDER_FEMALE,
+        'DATE_FORMAT' => \App\Constants\AppConstants::DATE_FORMAT,
+        'DATETIME_FORMAT' => \App\Constants\AppConstants::DATETIME_FORMAT,
     ],
 ];
