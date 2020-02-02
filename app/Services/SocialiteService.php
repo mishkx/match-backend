@@ -7,7 +7,8 @@ use App\Exceptions\SocialiteAuthException;
 use App\Models\Account\SocialAccount;
 use Socialite;
 use Exception;
-use AccountService;
+use AuthService;
+use UserService;
 
 class SocialiteService implements SocialiteContract
 {
@@ -40,10 +41,10 @@ class SocialiteService implements SocialiteContract
             return $socialAccount->user;
         }
 
-        $user = AccountService::getByEmail($providerUser->getEmail());
+        $user = UserService::getByEmail($providerUser->getEmail());
 
         if (!$user) {
-            $user = AccountService::registerWithoutPassword(
+            $user = AuthService::registerWithoutPassword(
                 $providerUser->getName(),
                 $providerUser->getEmail()
             );
@@ -58,7 +59,7 @@ class SocialiteService implements SocialiteContract
     public function auth($provider)
     {
         try {
-            return AccountService::login($this->getOrCreateUser($provider));
+            return AuthService::login($this->getOrCreateUser($provider));
         } catch (Exception $exception) {
             throw new SocialiteAuthException($exception);
         }
