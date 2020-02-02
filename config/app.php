@@ -175,7 +175,7 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
@@ -233,10 +233,14 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
 
-        'AccountService' => App\Facades\Services\AccountFacade::class,
-        'SocialiteService' => App\Facades\Services\SocialiteFacade::class,
-        'MatchService' => App\Facades\Services\MatchFacade::class,
+        'AppService' => App\Facades\Services\AppServiceFacade::class,
+        'AuthService' => App\Facades\Services\AuthServiceFacade::class,
         'ChatService' => App\Facades\Services\ChatFacade::class,
+        'ChoiceService' => App\Facades\Services\ChoiceFacade::class,
+        'MatchService' => App\Facades\Services\MatchFacade::class,
+        'RecommendationService' => App\Facades\Services\RecommendationFacade::class,
+        'SocialiteService' => App\Facades\Services\SocialiteFacade::class,
+        'UserService' => App\Facades\Services\UserServiceFacade::class,
     ],
 
 ];
