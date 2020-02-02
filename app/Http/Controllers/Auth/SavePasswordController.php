@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Contracts\Services\AccountContract;
+use App\Contracts\Services\AuthServiceContract;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\SavePasswordRequest;
 use App\Providers\RouteServiceProvider;
@@ -12,13 +12,13 @@ class SavePasswordController extends Controller
 {
     use RedirectsUsers;
 
-    protected $redirectTo = RouteServiceProvider::HOME;
+    protected string $redirectTo = RouteServiceProvider::HOME;
 
-    protected $accountService;
+    protected AuthServiceContract $authService;
 
-    public function __construct(AccountContract $accountService)
+    public function __construct(AuthServiceContract $authService)
     {
-        $this->accountService = $accountService;
+        $this->authService = $authService;
     }
 
     public function showForm()
@@ -28,7 +28,7 @@ class SavePasswordController extends Controller
 
     public function savePassword(SavePasswordRequest $request)
     {
-        $this->accountService->updatePassword($request->get('password'));
+        $this->authService->updatePassword($request->get('password'));
         return redirect($this->redirectPath());
     }
 }

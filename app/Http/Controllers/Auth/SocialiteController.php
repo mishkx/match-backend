@@ -16,7 +16,7 @@ class SocialiteController extends Controller
 
     protected $redirectTo = RouteServiceProvider::HOME;
 
-    protected $socialiteService;
+    protected SocialiteContract $socialiteService;
 
     public function __construct(SocialiteContract $socialiteService)
     {

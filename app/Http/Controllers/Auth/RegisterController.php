@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Contracts\Services\AccountContract;
+use App\Contracts\Services\AuthServiceContract;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RedirectsUsers;
-use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
@@ -15,12 +14,12 @@ class RegisterController extends Controller
 
     protected $redirectTo = RouteServiceProvider::HOME;
 
-    protected $accountService;
+    protected AuthServiceContract $authService;
 
-    public function __construct(AccountContract $accountService)
+    public function __construct(AuthServiceContract $authService)
     {
         $this->middleware('guest');
-        $this->accountService = $accountService;
+        $this->authService = $authService;
     }
 
     public function showRegistrationForm()
@@ -30,7 +29,7 @@ class RegisterController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        $this->accountService->registerAndLogin(
+        $this->authService->registerAndLogin(
             $request->get('name'),
             $request->get('email'),
             $request->get('password'),

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Contracts\Services\AuthServiceContract;
 use App\Contracts\Services\UserServiceContract;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
@@ -13,10 +14,12 @@ class LoginAsController extends Controller
     use RedirectsUsers;
 
     protected string $redirectTo = RouteServiceProvider::HOME;
+    protected AuthServiceContract $authService;
     protected UserServiceContract $userService;
 
-    public function __construct(UserServiceContract $userService)
+    public function __construct(AuthServiceContract $authService, UserServiceContract $userService)
     {
+        $this->authService = $authService;
         $this->userService = $userService;
     }
 
@@ -29,7 +32,7 @@ class LoginAsController extends Controller
         if (!$user) {
             return $this->sendError(Response::HTTP_NOT_FOUND);
         }
-        $this->userService->login($user);
+        $this->authService->login($user);
         return redirect()->to($this->redirectPath());
     }
 }
