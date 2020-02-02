@@ -2,114 +2,105 @@
 
 namespace App\Services;
 
+use App\Models\Chat\Participant;
+use UserService;
 use App\Constants\ModelTable;
-use App\Constants\UserConstants;
 use App\Contracts\Services\MatchContract;
+use App\Exceptions\MatchUserNotFoundException;
 use App\Models\Account\Match;
-use App\Models\Account\State;
 use App\Models\Account\User;
+use ChoiceService;
+use Illuminate\Database\Eloquent\Builder;
+use Lang;
 
 class MatchService implements MatchContract
 {
-    protected $model;
-
-    public function __construct(User $user)
+    public function getMatch(int $subjectId, int $objectId)
     {
-        $this->model = $user;
-    }
-
-    public function getPreferredUsersQuery(User $user)
-    {
-        return $this->model
-            ->whereAgeBetween($user->preference->age_from, $user->preference->age_to)
-            ->whereHas('state', function ($query) use ($user) {
-                /** @var State $query */
-                $query->distanceSphere(
-                    'location',
-                    $user->state->location,
-                    $user->preference->max_distance * UserConstants::DISTANCE_MULTIPLIER
-                );
-            })
-            ->whereGender($user->preference->gender)
-            ->where('id', '!=', $user->id)
-            ->with([
-                'state' => function ($query) use ($user) {
-                    /** @var State $query */
-                    $query->distanceSphereValue('location', $user->state->location);
-                }
-            ]);
-    }
-
-    public function getPreferredNewUsersQuery(User $user)
-    {
-        // todo: добавить сортировку по новым
-        return $this->getPreferredUsersQuery($user)
-            /**
-             * Пользователь не оценивал других пользователей.
-             */
-            ->whereDoesntHave('objectMatches', function ($query) use ($user) {
-                /** @var Match $query */
-                $query->whereSubjectId($user->id);
-            })
-            ->where(function ($query) use ($user) {
-                /** @var User $query */
-                $query
-                    /**
-                     * Пользователя не оценили негативно другие пользователи.
-                     */
-                    ->whereDoesntHave('subjectMatches', function ($query) use ($user) {
-                        /** @var Match $query */
-                        $query
-                            ->whereDoesntLike()
-                            ->whereObjectId($user->id);
-                    })
-                    /**
-                     * Пользователя оценили негативно другие пользователи, но истек период.
-                     */
-                    ->orWhereHas('subjectMatches', function ($query) use ($user) {
-                        /** @var Match $query */
-                        $query
-                            ->whereRenewalPeriodHasCome()
-                            ->whereDoesntLike()
-                            ->whereObjectId($user->id);
-                    });
-            });
-    }
-
-    public function getPreferredNewUsersWithRandomOrderQuery(User $user)
-    {
-        return $this->getPreferredNewUsersQuery($user)
-            ->orderByRaw(
-                'IF(('
-                . Match::whereObjectId($user->id)
-                    ->whereColumn('subject_id', ModelTable::USERS . '.id')
-                    ->orderByDesc('is_liked')
-                    ->select('is_liked')
-                    ->limit(1)
-                    ->toRawSql()
-                . ') IS NULL, 0.5, 1) + RAND() DESC'
-            );
-    }
-
-    public function getPreferredNewUsersWithRecentActivityQuery(User $user)
-    {
-        return $this->getPreferredNewUsersWithRandomOrderQuery($user)
-            ->whereHas('state', function ($query) use ($user) {
-                /** @var State $query */
-                $query->whereRecentlyPresent();
-            });
+        return Match::whereSubjectId($subjectId)
+            ->whereObjectId($objectId)
+            ->first();
     }
 
     public function getMatchedUsersQuery(User $user)
     {
-        return $this->model
+        return UserService::query()
             ->whereHasMatches($user->id)
+            ->withObjectMatchForSubject($user->id)
             ->orderByDesc(
                 Match::whereSubjectId($user->id)
                     ->whereColumn('object_id', ModelTable::USERS . '.id')
-                    ->orderByDesc('marked_at')
-                    ->select('marked_at')
+                    ->orderByDesc('chosen_at')
+                    ->select('chosen_at')
                     ->limit(1)
             );
+    }
+
+    public function getMatchedUsersWithoutCommunicatedQuery(User $user)
+    {
+        return $this->getMatchedUsersQuery($user)
+            ->whereDoesntHave('threads.participants', function ($query) use ($user) {
+                /** @var Participant $query */
+                $query->whereExistsSameThreadUserId($user->id, true);
+            });
+    }
+
+    public function getItems(User $user, int $fromId = null)
+    {
+        $fromDateTime = null;
+
+        if ($fromId) {
+            $match = $this->getMatch($user->id, $fromId);
+            if ($match) {
+                $fromDateTime = $match->chosen_at;
+            }
+        }
+
+        return $this->getMatchedUsersWithoutCommunicatedQuery($user)
+            ->where(function ($query) use ($fromId, $fromDateTime) {
+                /** @var Builder $query */
+                if ($fromId && $fromDateTime) {
+                    $query
+                        ->where('id', '!=', $fromId)
+                        ->whereDoesntHave('objectMatches', function ($query) use ($fromDateTime) {
+                            /** @var Match $query */
+                            $query->where('chosen_at', '>', $fromDateTime);
+                        });
+                }
+            })
+            ->limit(config('options.match.limit'))
+            ->get();
+    }
+
+    public function getUserInfo(User $user, int $id)
+    {
+        $objectUser = ChoiceService::getUserChoiceQuery($user)
+            ->whereHasMatches($user->id)
+            ->find($id);
+
+        if (!$objectUser) {
+            throw new MatchUserNotFoundException(Lang::get('We are sorry, user not found.'));
+        }
+
+        $match = $this->getMatch($user->id, $id);
+        $match->update([
+            'is_visited' => true,
+            'visited_at' => now()->toDateTimeString(),
+        ]);
+
+        return $objectUser;
+    }
+
+    public function delete(User $user, $id)
+    {
+        $match = $this->getMatch($user->id, $id);
+
+        if ($match) {
+            $match->delete();
+        }
+
+        return [
+            'id' => $id,
+        ];
     }
 }
