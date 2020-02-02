@@ -14,16 +14,18 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.2",
+        "php": "^7.4",
         "darkaonline/l5-swagger": "^6.0",
         "fideloper/proxy": "^4.0",
         "grimzy/laravel-mysql-spatial": "^2.2",
         "guzzlehttp/guzzle": "^6.5",
-        "laravel/framework": "^6.2",
-        "laravel/passport": "^8.0",
+        "laravel/framework": "^6.12",
+        "laravel/passport": "^8.3",
         "laravel/socialite": "^4.3",
         "laravel/tinker": "^2.0",
+        "pusher/pusher-php-server": "^4.1",
         "socialiteproviders/manager": "^3.4",
+        "socialiteproviders/vkontakte": "^4.0",
         "spatie/laravel-medialibrary": "^7.18"
     },
     "require-dev": {
