@@ -2,6 +2,8 @@
 
 namespace App\Constants;
 
+use Spatie\Image\Manipulations;
+
 class UserConstants
 {
     public const MIN_AGE = 18;
@@ -20,4 +22,12 @@ class UserConstants
     public const MAX_DESCRIPTION_LENGTH = 140;
 
     public const MAX_NAME_LENGTH = 20;
+
+    public const MEDIA_COLLECTION_PHOTOS = 'photos';
+    public const MEDIA_COLLECTION_PHOTOS_FORMAT = Manipulations::FORMAT_JPG;
+    public const MEDIA_COLLECTION_PHOTOS_WIDTH = 1080;
+    public const MEDIA_COLLECTION_PHOTOS_ITEMS = 9;
+    public const MEDIA_COLLECTION_PHOTOS_MIN_WIDTH = 300;
+    public const MEDIA_CONVERSION_AVATAR = 'thumb';
+    public const MEDIA_CONVERSION_AVATAR_WIDTH = 96;
 }

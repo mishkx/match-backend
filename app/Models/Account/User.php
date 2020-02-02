@@ -4,6 +4,7 @@ namespace App\Models\Account;
 
 use App\Constants\AppConstants;
 use App\Constants\ModelTable;
+use App\Constants\UserConstants;
 use App\Models\Chat\Message;
 use App\Models\Chat\Participant;
 use App\Models\Chat\Thread;
@@ -18,6 +19,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\ImageGenerators\FileTypes\Image;
+use Spatie\MediaLibrary\Models\Media;
 
 /**
  * @method static Builder|self withObjectMatchForSubject($subjectId)
@@ -50,9 +55,9 @@ use Illuminate\Support\Carbon;
  * @property-read Collection|Thread[] $threads
  * @mixin Eloquent
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use Notifiable, SoftDeletes, FillableTrait;
+    use Notifiable, SoftDeletes, FillableTrait, HasMediaTrait;
 
     protected $table = ModelTable::USERS;
 
@@ -213,5 +218,20 @@ class User extends Authenticatable
                 $query->distanceSphereValue('location', $user->state->location);
             }
         ]);
+    }
+
+    public function registerMediaCollections()
+    {
+        $this->addMediaCollection(UserConstants::MEDIA_COLLECTION_PHOTOS)
+            ->onlyKeepLatest(UserConstants::MEDIA_COLLECTION_PHOTOS_ITEMS)
+            ->acceptsMimeTypes((new Image())->supportedMimeTypes()->toArray());
+    }
+
+    public function registerMediaConversions(Media $media = null)
+    {
+        $this->addMediaConversion(UserConstants::MEDIA_CONVERSION_AVATAR)
+            ->width(UserConstants::MEDIA_CONVERSION_AVATAR_WIDTH)
+            ->optimize()
+            ->performOnCollections(UserConstants::MEDIA_COLLECTION_PHOTOS);
     }
 }

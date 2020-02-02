@@ -24,7 +24,7 @@
         "laravel/socialite": "^4.3",
         "laravel/tinker": "^2.0",
         "socialiteproviders/manager": "^3.4",
-        "socialiteproviders/vkontakte": "^4.0"
+        "spatie/laravel-medialibrary": "^7.18"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",

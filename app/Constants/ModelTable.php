@@ -4,6 +4,8 @@ namespace App\Constants;
 
 class ModelTable
 {
+    public const MEDIA = 'media';
+
     public const USERS = 'users';
     public const USER_STATES = 'user_states';
     public const USER_MATCHES = 'user_matches';
