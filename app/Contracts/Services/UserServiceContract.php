@@ -3,42 +3,31 @@
 namespace App\Contracts\Services;
 
 use App\Models\Account\User;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Database\Eloquent\Builder;
 
-interface AccountContract
+interface UserServiceContract
 {
     public function query();
 
-    public function id();
-
     /**
-     * @return User
+     * @param int $id
+     * @return Builder|User
      */
-    public function user();
+    public function baseDataQuery(int $id);
 
-    /**
-     * @return Guard|StatefulGuard
-     */
-    public function guard();
+    public function getById(int $id);
 
-    public function loginUsingId($id, $remember = false);
+    public function getByEmail(string $email);
 
-    public function login(User $user, $remember = false);
+    public function create(array $data);
 
-    public function register($name, $email, $password, $passwordIsSet = false);
+    public function retrieve(int $id);
 
-    public function registerAndLogin($name, $email, $password, $remember = false);
+    public function store(int $id, array $requestData);
 
-    public function registerWithoutPassword($name, $email);
+    public function storePhoto(User $user, string $name, string $path);
 
-    public function getById($id);
+    public function deletePhoto(User $user, int $fileId);
 
-    public function getByEmail($email);
-
-    public function create($data);
-
-    public function update($data);
-
-    public function updatePassword($password);
+    public function orderPhotos(User $user, array $fileIds, int $startOrder = 1);
 }

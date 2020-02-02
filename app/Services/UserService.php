@@ -2,14 +2,18 @@
 
 namespace App\Services;
 
-use App\Contracts\Services\AccountContract;
+use App\Constants\UserConstants;
+use App\Contracts\Services\UserServiceContract;
+use App\Exceptions\UserPhotosCountExceededException;
+use App\Models\Account\Preference;
 use App\Models\Account\User;
-use Auth;
-use Hash;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
+use Lang;
+use Spatie\Image\Image;
+use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\Models\Media;
 
-class AccountService implements AccountContract
+class UserService implements UserServiceContract
 {
     protected $model;
 
@@ -18,90 +22,120 @@ class AccountService implements AccountContract
         $this->model = $user;
     }
 
-    protected static function hashPassword($password)
-    {
-        return Hash::make($password);
-    }
-
     public function query()
     {
         return $this->model;
     }
 
-    public function id()
+    public function baseDataQuery(int $id)
     {
-        return $this->guard()->id();
+        return $this->query()
+            ->where('id', $id)
+            ->with([
+                'preference',
+                'media',
+            ]);
     }
 
-    public function user()
+    public function getById(int $id)
     {
-        return $this->guard()->user();
+        return $this->query()->find($id);
     }
 
-    public function guard()
+    public function getByEmail(string $email)
     {
-        return Auth::guard();
+        return $this->query()->where('email', $email)->first();
     }
 
-    public function loginUsingId($id, $remember = false)
+    public function create(array $data)
     {
-        return $this->guard()->loginUsingId($id, $remember);
+        return $this->query()->create($data);
     }
 
-    public function login(User $user, $remember = false)
+    public function retrieve(int $id)
     {
-        return $user ? $this->loginUsingId($user->id, $remember) : false;
+        return $this->baseDataQuery($id)->first();
     }
 
-    public function register($name, $email, $password, $passwordIsSet = false)
+    public function store(int $id, array $requestData)
     {
-        $user = $this->create([
-            'name' => $name,
-            'email' => $email,
-            'password' => self::hashPassword($password),
-            'password_is_set' => $passwordIsSet,
+        $requestData = collect($requestData);
+        $requestPreferences = collect($requestData->get('preferences'));
+
+        $user = $this->baseDataQuery($id)->first();
+        $preference = $user->preference ?: new Preference();
+
+        $user->update([
+            'name' => $requestData->get('name'),
+            'gender' => $requestData->get('gender'),
+            'born_on' => $requestData->get('bornOn'),
+            'description' => $requestData->get('description'),
         ]);
-        event(new Registered($user));
+
+        $user->preference()->save($preference->fill([
+            'gender' => $requestPreferences->get('gender'),
+            'age_from' => $requestPreferences->get('ageFrom'),
+            'age_to' => $requestPreferences->get('ageTo'),
+            'max_distance' => $requestPreferences->get('maxDistance'),
+        ]));
+
         return $user;
     }
 
-    public function registerAndLogin($name, $email, $password, $remember = false)
+    public function storePhoto(User $user, string $name, string $path)
     {
-        $user = $this->register($name, $email, $password, true);
-        $this->login($user, $remember);
-        return $user;
+        if ($user->media()->count() >= UserConstants::MEDIA_COLLECTION_PHOTOS_ITEMS) {
+            throw new UserPhotosCountExceededException(Lang::get("You can't add more than :count photos.", [
+                'count' => UserConstants::MEDIA_COLLECTION_PHOTOS_ITEMS,
+            ]));
+        }
+
+        $image = Image::load($path);
+
+        $filename = Str::random() . '.' . UserConstants::MEDIA_COLLECTION_PHOTOS_FORMAT;
+
+        $width = $image->getWidth();
+        $height = $image->getHeight();
+        $dimensionSize = max($width, $height);
+
+        if ($dimensionSize > UserConstants::MEDIA_COLLECTION_PHOTOS_WIDTH) {
+            $dimensionSize = UserConstants::MEDIA_COLLECTION_PHOTOS_WIDTH;
+            $image->width($dimensionSize);
+        }
+
+        $image
+            ->format(UserConstants::MEDIA_COLLECTION_PHOTOS_FORMAT)
+            ->crop(Manipulations::CROP_CENTER, $dimensionSize, $dimensionSize)
+            ->optimize()
+            ->save();
+
+        return $user->addMedia($path)
+            ->usingName($name)
+            ->usingFileName($filename)
+            ->toMediaCollection(UserConstants::MEDIA_COLLECTION_PHOTOS);
     }
 
-    public function registerWithoutPassword($name, $email)
+    public function deletePhoto(User $user, int $fileId)
     {
-        return $this->register($name, $email, Str::random(), false);
+        $user->deleteMedia($fileId);
+        return $user->getMedia(UserConstants::MEDIA_COLLECTION_PHOTOS)
+            ->reject(function (Media $item) use ($fileId) {
+                return $item->id === $fileId;
+            });
     }
 
-    public function getById($id)
+    // todo
+    public function orderPhotos(User $user, array $fileIds, int $startOrder = 1)
     {
-        return $this->model->find($id);
-    }
+        $user->getMedia();
 
-    public function getByEmail($email)
-    {
-        return $this->model->where('email', $email)->first();
-    }
-
-    public function create($data)
-    {
-        return $this->model->create($data);
-    }
-
-    public function update($data)
-    {
-        return $this->user()->update($data);
-    }
-
-    public function updatePassword($password)
-    {
-        return $this->update([
-            'password' => self::hashPassword($password),
-            'password_is_set' => true,
-        ]);
+        collect($fileIds)->each(function ($fileId) use ($user, &$startOrder) {
+            $model = $user->media()->find($fileId);
+            if ($model) {
+                $model->update([
+                    'order_column' => $startOrder++,
+                ]);
+            }
+        });
     }
 }

@@ -2,13 +2,13 @@
 
 namespace App\Facades\Services;
 
-use App\Contracts\Services\AccountContract;
+use App\Contracts\Services\UserServiceContract;
 use Illuminate\Support\Facades\Facade;
 
-class AccountFacade extends Facade
+class UserServiceFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return AccountContract::class;
+        return UserServiceContract::class;
     }
 }
