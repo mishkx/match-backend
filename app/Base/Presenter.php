@@ -2,6 +2,7 @@
 
 namespace App\Base;
 
+use App\Constants\AppConstants;
 use App\Contracts\Presenters\PresenterContract;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -11,12 +12,22 @@ class Presenter implements PresenterContract
     protected $resource;
     protected $relations;
 
-    protected const DATETIME_FORMAT = Carbon::DEFAULT_TO_STRING_FORMAT;
-    protected const DATE_FORMAT = 'Y-m-d';
+    public function __construct($resource = null)
+    {
+        if ($resource) {
+            $this->setResource($resource);
+        }
+    }
 
-    public function __toString()
+    public function __toString(): string
     {
         return collect($this->resource)->toJson();
+    }
+
+    public function setResource($resource): self
+    {
+        $this->resource = $resource;
+        return $this;
     }
 
     protected function getResourceValue($key, $default = null)
@@ -32,32 +43,32 @@ class Presenter implements PresenterContract
         return $this->relations[$relation];
     }
 
-    public static function boolean($value)
+    public static function boolean($value): bool
     {
         return (boolean)$value;
     }
 
-    public static function integer($value)
+    public static function integer($value): int
     {
         return (integer)$value;
     }
 
-    public static function string($value)
+    public static function string($value): string
     {
         return (string)$value;
     }
 
-    public static function array($value)
+    public static function collection($value): array
     {
         return Arr::accessible($value) ? collect($value)->values()->toArray() : [];
     }
 
-    public static function object($value = [])
+    public static function assoc($value = [])
     {
         return Arr::isAssoc($value) ? $value : new \stdClass();
     }
 
-    public static function dateTime($value, $format = self::DATETIME_FORMAT)
+    public static function dateTime($value, $format = AppConstants::DATETIME_FORMAT): string
     {
         if ($value instanceof Carbon) {
             return $value->format($format);
@@ -65,27 +76,27 @@ class Presenter implements PresenterContract
         return Carbon::parse($value)->format($format);
     }
 
-    public static function nullableInteger($value)
+    public static function nullableInteger($value): ?int
     {
         return is_null($value) ? $value : self::integer($value);
     }
 
-    public static function nullableString($value)
+    public static function nullableString($value): ?string
     {
         return is_null($value) ? $value : self::string($value);
     }
 
-    public static function nullableArray($value)
+    public static function nullableCollection($value): ?array
     {
-        return is_null($value) ? $value : self::array($value);
+        return is_null($value) ? $value : self::collection($value);
     }
 
-    public static function nullableObject($value)
+    public static function nullableAssoc($value)
     {
-        return is_null($value) ? $value : self::object($value);
+        return is_null($value) ? $value : self::assoc($value);
     }
 
-    public static function nullableDateTime($value, $format = self::DATETIME_FORMAT)
+    public static function nullableDateTime($value, $format = AppConstants::DATETIME_FORMAT): ?string
     {
         return is_null($value) ? $value : self::dateTime($value, $format);
     }
