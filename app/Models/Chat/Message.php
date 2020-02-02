@@ -16,6 +16,9 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int|null $participant_id
  * @property string|null $content
+ * @property string|null $token
+ * @property Carbon|null $sent_at
+ * @property Carbon|null $edited_at
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

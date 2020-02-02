@@ -11,12 +11,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 /**
  * @method static Builder|self whereAvailableForUser($userId)
  * @method static Builder|self whereHasNewMessages()
  * @method static Builder|self withLatestMessage()
+ * @method static Builder|self withUnreadMessagesCount($userId)
+ * @method static Builder|self withParticipant($notUserId)
  * @property int $id
  * @property Carbon|null $refreshed_at
  * @property Carbon|null $created_at
@@ -24,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasOneThrough;
  * @property-read Collection|Message[] $messages
  * @property-read Message $latestMessage
  * @property-read Collection|Participant[] $participants
+ * @property-read Participant $participant
  * @property-read Collection|User[] $users
  * @mixin Eloquent
  */
@@ -66,6 +70,11 @@ class Thread extends Model
         return $this->hasMany(Participant::class);
     }
 
+    public function participant(): HasOne
+    {
+        return $this->hasOne(Participant::class);
+    }
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, Participant::class);
@@ -90,7 +99,40 @@ class Thread extends Model
      */
     public function scopeWithLatestMessage($query)
     {
-        return $query->with('latestMessage');
+        return $query->with('latestMessage.participant');
+    }
+
+    /**
+     * @param self $query
+     * @param $userId
+     * @return mixed
+     */
+    public function scopeWithUnreadMessagesCount($query, $userId)
+    {
+        return $query
+            ->withCount([
+                'messages' => function ($query) use ($userId) {
+                    /** @var Builder $query */
+                    $query
+                        ->join(
+                            ModelTable::CHAT_PARTICIPANTS . ' AS p',
+                            'p.thread_id',
+                            ModelTable::CHAT_PARTICIPANTS . '.thread_id'
+                        )
+                        ->where('p.user_id', $userId)
+                        ->where(ModelTable::CHAT_PARTICIPANTS . '.user_id', '!=', $userId)
+                        ->where(function ($query) {
+                            /** @var Builder $query */
+                            $query
+                                ->whereColumn(
+                                    'p.visited_at',
+                                    '<',
+                                    ModelTable::CHAT_MESSAGES . '.created_at'
+                                )
+                                ->orWhereNull('p.visited_at');
+                        });
+                }
+            ]);
     }
 
     /**
@@ -109,5 +151,23 @@ class Thread extends Model
                 /** @var User $query */
                 $query->where('id', $userId);
             });
+    }
+
+    /**
+     * @param self $query
+     * @param int $notUserId
+     * @return mixed
+     */
+    public function scopeWithParticipant($query, $notUserId)
+    {
+        return $query
+            ->with([
+                'participant' => function ($query) use ($notUserId) {
+                    /** @var Participant $query */
+                    $query
+                        ->with('user')
+                        ->where('user_id', '!=', $notUserId);
+                }
+            ]);
     }
 }
