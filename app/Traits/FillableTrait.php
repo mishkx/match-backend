@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Base;
+namespace App\Traits;
 
 use Cache;
 use Illuminate\Database\Eloquent\Model;
 
-trait Fillable
+trait FillableTrait
 {
     protected function setFillable()
     {
