@@ -2,12 +2,13 @@
 
 namespace App\Models\Account;
 
-use App\Base\Fillable;
+use App\Constants\AppConstants;
 use App\Constants\ModelTable;
 use App\Models\Chat\Message;
 use App\Models\Chat\Participant;
 use App\Models\Chat\Thread;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\FillableTrait;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,10 +17,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Eloquent;
 use Illuminate\Support\Carbon;
 
 /**
+ * @method static Builder|self withObjectMatchForSubject($subjectId)
+ * @method static Builder|self withSubjectMatchForObject($objectId)
+ * @method static Builder|self withStateDistance(self $user)
  * @method static Builder|self whereAgeBetween($ageFrom, $ageTo)
  * @method static Builder|self whereGender($gender)
  * @method static Builder|self whereHasMatches($userId)
@@ -32,11 +35,14 @@ use Illuminate\Support\Carbon;
  * @property boolean $password_is_set
  * @property string|null $gender
  * @property Carbon|null $born_on
+ * @property string|null $description
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection|Match[] $objectMatches
  * @property-read Collection|Match[] $subjectMatches
+ * @property-read Match $objectMatch
+ * @property-read Match $subjectMatch
  * @property-read Preference $preference
  * @property-read State $state
  * @property-read Collection|Message[] $messages
@@ -46,7 +52,7 @@ use Illuminate\Support\Carbon;
  */
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, Fillable;
+    use Notifiable, SoftDeletes, FillableTrait;
 
     protected $table = ModelTable::USERS;
 
@@ -57,7 +63,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password_is_set' => 'boolean',
-        'born_on' => 'datetime:Y-m-d',
+        'born_on' => 'datetime:' . AppConstants::DATE_FORMAT,
     ];
 
     public function __construct(array $attributes = [])
@@ -74,6 +80,16 @@ class User extends Authenticatable
     public function subjectMatches(): HasMany
     {
         return $this->hasMany(Match::class, 'subject_id');
+    }
+
+    public function objectMatch(): HasOne
+    {
+        return $this->hasOne(Match::class, 'object_id');
+    }
+
+    public function subjectMatch(): HasOne
+    {
+        return $this->hasOne(Match::class, 'subject_id');
     }
 
     public function preference(): HasOne
@@ -152,5 +168,50 @@ class User extends Authenticatable
                     ->whereIsLiked()
                     ->whereSubjectId($userId);
             });
+    }
+
+    /**
+     * @param self $query
+     * @param $subjectId
+     * @return mixed
+     */
+    public function scopeWithObjectMatchForSubject($query, $subjectId)
+    {
+        return $query->with([
+            'objectMatch' => function ($query) use ($subjectId) {
+                /** @var Match $query */
+                $query->whereSubjectId($subjectId);
+            }
+        ]);
+    }
+
+    /**
+     * @param self $query
+     * @param $objectId
+     * @return mixed
+     */
+    public function scopeWithSubjectMatchForObject($query, $objectId)
+    {
+        return $query->with([
+            'subjectMatch' => function ($query) use ($objectId) {
+                /** @var Match $query */
+                $query->whereObjectId($objectId);
+            }
+        ]);
+    }
+
+    /**
+     * @param self $query
+     * @param self $user
+     * @return mixed
+     */
+    public function scopeWithStateDistance($query, self $user)
+    {
+        return $query->with([
+            'state' => function ($query) use ($user) {
+                /** @var State $query */
+                $query->distanceSphereValue('location', $user->state->location);
+            }
+        ]);
     }
 }

@@ -20,7 +20,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $subject_id
  * @property int|null $object_id
  * @property boolean $is_liked
- * @property Carbon|null $marked_at
+ * @property boolean $is_visited
+ * @property Carbon|null $chosen_at
+ * @property Carbon|null $visited_at
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -36,7 +38,9 @@ class Match extends Model
 
     protected $casts = [
         'is_liked' => 'boolean',
-        'marked_at' => 'datetime',
+        'is_visited' => 'boolean',
+        'chosen_at' => 'datetime',
+        'visited_at' => 'datetime',
     ];
 
     public function object(): BelongsTo
@@ -94,7 +98,7 @@ class Match extends Model
     public function scopeWhereRenewalPeriodHasCome($query)
     {
         return $query->where(
-            'marked_at',
+            'chosen_at',
             '<=',
             Carbon::now()->subDays(config('options.match.renewalPeriod'))->toDateTimeString()
         );
