@@ -22,7 +22,7 @@ class IdResource extends JsonResource
              *     type="integer",
              * )
              */
-            'id' => $this->resource->id,
+            'id' => (int)$this->resource['id'],
         ];
     }
 }

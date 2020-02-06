@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\Services\ChoiceContract;
+use App\Events\MatchCreated;
 use App\Models\Account\User;
 use Carbon\Carbon;
 use UserService;
@@ -33,6 +34,19 @@ class ChoiceService implements ChoiceContract
                 'chosen_at' => Carbon::now(),
                 'is_liked' => $isLiked,
             ]);
+        }
+
+        if ($isLiked) {
+            $objectChoiceIsLiked = $objectUser->subjectMatches()
+                ->where([
+                    'object_id' => $subjectUser->id
+                ])
+                ->whereIsLiked()
+                ->first();
+            if ($objectChoiceIsLiked) {
+                broadcast(new MatchCreated($objectUser->id, $this->getUserChoiceQuery($objectUser)
+                    ->find($subjectUser->id)));
+            }
         }
 
         return $this->getUserChoiceQuery($subjectUser)

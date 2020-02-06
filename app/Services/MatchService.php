@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\MatchDeleted;
 use App\Models\Chat\Participant;
 use UserService;
 use App\Constants\ModelTable;
@@ -57,12 +58,17 @@ class MatchService implements MatchContract
         }
 
         return $this->getMatchedUsersWithoutCommunicatedQuery($user)
+            ->withSubjectMatchForObject($user->id)
             ->where(function ($query) use ($fromId, $fromDateTime) {
                 /** @var Builder $query */
                 if ($fromId && $fromDateTime) {
                     $query
                         ->where('id', '!=', $fromId)
                         ->whereDoesntHave('objectMatches', function ($query) use ($fromDateTime) {
+                            /** @var Match $query */
+                            $query->where('chosen_at', '>', $fromDateTime);
+                        })
+                        ->whereDoesntHave('subjectMatches', function ($query) use ($fromDateTime) {
                             /** @var Match $query */
                             $query->where('chosen_at', '>', $fromDateTime);
                         });
@@ -97,6 +103,7 @@ class MatchService implements MatchContract
 
         if ($match) {
             $match->delete();
+            broadcast(new MatchDeleted($id, $user));
         }
 
         return [

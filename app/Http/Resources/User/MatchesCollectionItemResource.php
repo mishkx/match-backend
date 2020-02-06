@@ -45,6 +45,16 @@ class MatchesCollectionItemResource extends JsonResource
             'isVisited' => $presenter->getObjectMatch()->getIsVisited(),
 
             /**
+             *
+             * @OA\Property(
+             *      property="matchedAt",
+             *      type="string",
+             *      format=DATETIME_FORMAT,
+             * ),
+             */
+            'matchedAt' => $presenter->getMatchedAt(),
+
+            /**
              * @OA\Property(
              *     property="photo",
              *     allOf={@OA\Schema(ref="#/components/schemas/MediaResource")},
