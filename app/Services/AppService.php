@@ -8,10 +8,39 @@ use App\Constants\UserConstants;
 
 class AppService implements AppServiceContract
 {
+    protected function getBroadcastingConfig()
+    {
+        $driver = config('broadcasting.default');
+        $broadcaster = $driver;
+
+        switch ($driver) {
+            case 'pusher':
+                $options = [
+                    'cluster' => config('broadcasting.connections.pusher.options.cluster'),
+                    'forceTLS' => config('broadcasting.connections.pusher.options.useTLS'),
+                    'key' => config('broadcasting.connections.pusher.key'),
+                ];
+                break;
+
+            case 'redis':
+            default:
+                $broadcaster = 'socket.io';
+                $options = [
+                    'host' => config('app.url'),
+                ];
+        }
+
+        return [
+            'broadcaster' => $broadcaster,
+            'options' => $options,
+        ];
+    }
+
     public function config()
     {
         return [
             'chatMaxMessageContentLength' => ChatConstants::MAX_MESSAGE_CONTENT_LENGTH,
+            'socket' => $this->getBroadcastingConfig(),
             'userGenderMale' => UserConstants::GENDER_MALE,
             'userGenderFemale' => UserConstants::GENDER_FEMALE,
             'userMinAge' => UserConstants::MIN_AGE,
