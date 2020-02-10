@@ -74,7 +74,7 @@ Route::group(['prefix' => 'api/v1', 'as' => 'api.v1.'], function () {
         ->name('app.config');
 });
 
-Route::group(['middleware' => ['auth', 'user.password.missed', 'throttle']], function () {
+Route::group(['middleware' => ['auth', 'user.password.missed', 'throttle', 'user.fake.state']], function () {
     Route::get('{all}', 'AppController@root')
         ->name('root')
         ->where('all', '^(?!(_debugbar|test)).*$');

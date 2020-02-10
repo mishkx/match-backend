@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\Localization;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -35,6 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\Localization::class
         ],
 
         'api' => [
@@ -63,6 +65,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
         'user.password.missed' => \App\Http\Middleware\SetUserMissedPassword::class,
+        'user.fake.state' => \App\Http\Middleware\StoreFakeUserState::class,
     ];
 
     /**

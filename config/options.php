@@ -62,4 +62,9 @@ return [
     ],
 
     'faker' => env('APP_FAKER', false),
+
+    'locales' => [
+        'en',
+        'ru',
+    ],
 ];
