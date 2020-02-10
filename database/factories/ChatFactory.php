@@ -25,9 +25,9 @@ $factory->define(Message::class, function (Faker $faker) {
     $dateTime = $faker->dateTimeThisMonth();
     return [
         'participant_id' => factory(Participant::class),
-        'content' => $faker->realText(),
+        'content' => $faker->realText(50),
+        'token' => Str::random(),
         'updated_at' => $dateTime,
         'created_at' => $dateTime,
     ];
 });
-

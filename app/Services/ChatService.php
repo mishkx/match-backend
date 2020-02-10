@@ -134,7 +134,7 @@ class ChatService implements ChatContract
         return $participant;
     }
 
-    public function createMessage(int $fromUserId, int $toUserId, string $content, string $token, string $sentAt)
+    public function createMessage(int $fromUserId, int $toUserId, string $content, string $token, string $sentAt, bool $isFake = false)
     {
         $participant = $this->getParticipant($fromUserId, $toUserId);
 
@@ -165,8 +165,13 @@ class ChatService implements ChatContract
             ])
             ->find($participant->thread_id);
 
-        broadcast(new ChatMessageCreated($toUserId, $thread));
+        broadcast(new ChatMessageCreated($toUserId, $thread, $isFake));
 
         return $message;
+    }
+
+    public function createFakeMessage(int $fromUserId, int $toUserId, string $content, string $token, string $sentAt)
+    {
+        return $this->createMessage($fromUserId, $toUserId, $content, $token, $sentAt, true);
     }
 }
