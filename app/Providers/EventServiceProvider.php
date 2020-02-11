@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Events\ChatMessageCreated;
+use App\Listeners\CreateUserFakeChoices;
 use App\Listeners\SendFakeMessage;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -25,6 +27,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         ChatMessageCreated::class => [
             SendFakeMessage::class,
+        ],
+        Login::class => [
+            CreateUserFakeChoices::class,
         ],
     ];
 
