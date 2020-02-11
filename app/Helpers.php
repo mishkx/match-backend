@@ -2,8 +2,11 @@
 
 namespace App;
 
-use DB;
 use Closure;
+use DB;
+use Exception;
+use File;
+use Illuminate\Support\Arr;
 
 class Helpers
 {
@@ -32,5 +35,19 @@ class Helpers
                 ];
             })
             ->toArray();
+    }
+
+    public static function asset($name)
+    {
+        $directory = config('options.assets.directory');
+        $manifest = public_path($directory . config('options.assets.file'));
+
+        if (!File::exists($manifest)) {
+            throw new Exception('Asset manifest does not exist.');
+        }
+
+        $content = json_decode(File::get($manifest), true);
+
+        return $directory . Arr::get($content['files'], $name);
     }
 }
