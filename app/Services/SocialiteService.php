@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\Services\SocialiteContract;
 use App\Exceptions\SocialiteAuthException;
 use App\Models\Account\SocialAccount;
+use Illuminate\Support\Str;
 use Socialite;
 use Exception;
 use AuthService;
@@ -17,6 +18,16 @@ class SocialiteService implements SocialiteContract
     public function __construct(SocialAccount $socialAccount)
     {
         $this->model = $socialAccount;
+    }
+
+    public function getAvailableProviders()
+    {
+        return array_map('trim', explode(',', config('options.oauth.services')));
+    }
+
+    public function providerIsAvailable($provider)
+    {
+        return in_array(Str::lower($provider), $this->getAvailableProviders());
     }
 
     public function getProviderUser($provider)

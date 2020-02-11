@@ -3,5 +3,13 @@
     "Unable to authenticate. Please try again.": "Неудачная попытка авторизации. Пожалуйста, попробуйте снова.",
     "You can't add more than :count photos.": "Вы не можете добавить более :count фотографий.",
     "We are sorry, user not found.": "Сожалеем, но данный пользователь не найден в системе.",
-    "You can't send a message to this user": "Вы не можете отправить сообщение данному пользователю."
+    "You can't send a message to this user": "Вы не можете отправить сообщение данному пользователю.",
+    "Login": "Войти",
+    "Register": "Регистрация",
+    "E-Mail Address": "Почта",
+    "Password": "Пароль",
+    "Confirm Password": "Подтвердить пароль",
+    "Remember Me": "Запомнить меня",
+    "Forgot Your Password?": "Забыли пароль?",
+    "Login with :provider": "Войти через :provider"
 }

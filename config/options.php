@@ -9,7 +9,7 @@ return [
     ],
 
     /*
-     * Доступные сервисы для авторизации. Формат: service1|service2
+     * Доступные сервисы для авторизации. Формат: service1,service2
      */
     'oauth' => [
         'services' => env('OAUTH_SERVICES', ''),

@@ -18,11 +18,9 @@ Route::get('login/as/{id}', 'Auth\LoginAsController@loginAs')
 
 Route::group(['prefix' => 'oauth', 'as' => 'oauth.', 'middleware' => ['guest', 'throttle']], function () {
     Route::get('{provider}', 'Auth\SocialiteController@redirectToProvider')
-        ->name('login')
-        ->where('provider', config('options.oauth.services'));
+        ->name('login');
     Route::get('{provider}/callback', 'Auth\SocialiteController@handleProviderCallback')
-        ->name('callback')
-        ->where('provider', config('options.oauth.services'));
+        ->name('callback');
 });
 
 Route::group(['middleware' => ['auth', 'throttle']], function () {

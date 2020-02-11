@@ -9,6 +9,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RedirectsUsers;
 use Socialite;
 use Lang;
+use Symfony\Component\HttpFoundation\Response;
 
 class SocialiteController extends Controller
 {
@@ -25,11 +26,17 @@ class SocialiteController extends Controller
 
     public function redirectToProvider($provider)
     {
+        if (!$this->socialiteService->providerIsAvailable($provider)) {
+            return $this->sendError(Response::HTTP_NOT_FOUND);
+        }
         return Socialite::driver($provider)->redirect();
     }
 
     public function handleProviderCallback($provider)
     {
+        if (!$this->socialiteService->providerIsAvailable($provider)) {
+            return $this->sendError(Response::HTTP_NOT_FOUND);
+        }
         try {
             if ($this->socialiteService->auth($provider)) {
                 return redirect()->to($this->redirectPath());
