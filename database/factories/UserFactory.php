@@ -44,5 +44,6 @@ $factory->define(User::class, function (Faker $faker) {
                 '-' . UserConstants::MIN_AGE . ' years'
             )
             ->format('Y-m-d'),
+        'description' => $faker->text(50),
     ];
 });
