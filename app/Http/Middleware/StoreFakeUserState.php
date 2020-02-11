@@ -18,20 +18,22 @@ class StoreFakeUserState
      */
     public function handle($request, Closure $next)
     {
-        $user = AuthService::user();
+        if (config('options.faker')) {
+            $user = AuthService::user();
 
-        $fakeState = factory(State::class)->make();
-        $location = $fakeState->location;
-        $ipAddress = $fakeState->ip_address;
+            $fakeState = factory(State::class)->make();
+            $location = $fakeState->location;
+            $ipAddress = $fakeState->ip_address;
 
-        $state = $user->state ?: new State();
+            $state = $user->state ?: new State();
 
-        $user->state()->save($state->fill([
-            'session_id' => $request->session()->getId(),
-            'location' => $location,
-            'ip_address' => $ipAddress,
-            'is_accurate' => true,
-        ]));
+            $user->state()->save($state->fill([
+                'session_id' => $request->session()->getId(),
+                'location' => $location,
+                'ip_address' => $ipAddress,
+                'is_accurate' => true,
+            ]));
+        }
 
         return $next($request);
     }

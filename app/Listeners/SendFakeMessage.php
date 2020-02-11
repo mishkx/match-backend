@@ -7,6 +7,7 @@ use App\Models\Chat\Message;
 use ChatService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use UserService;
 
 class SendFakeMessage implements ShouldQueue
 {
@@ -14,7 +15,11 @@ class SendFakeMessage implements ShouldQueue
 
     public function handle(ChatMessageCreated $event)
     {
-        if ($event->getIsFake()) {
+        if (
+            !config('options.faker')
+            || $event->getIsFake()
+            || UserService::wasActiveRecently($event->getToUserId())
+        ) {
             return;
         }
 
@@ -27,6 +32,5 @@ class SendFakeMessage implements ShouldQueue
             $message->token,
             now()->toDateTimeString()
         );
-
     }
 }

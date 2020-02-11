@@ -19,6 +19,8 @@ interface UserServiceContract
 
     public function getByEmail(string $email);
 
+    public function wasActiveRecently(int $id): bool;
+
     public function create(array $data);
 
     public function retrieve(int $id);

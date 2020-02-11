@@ -7,6 +7,7 @@ use App\Contracts\Services\UserServiceContract;
 use App\Exceptions\UserPhotosCountExceededException;
 use App\Models\Account\Preference;
 use App\Models\Account\User;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Lang;
 use Spatie\Image\Image;
@@ -45,6 +46,15 @@ class UserService implements UserServiceContract
     public function getByEmail(string $email)
     {
         return $this->query()->where('email', $email)->first();
+    }
+
+    public function wasActiveRecently(int $id): bool
+    {
+        $user = $this->getById($id);
+        if (!$user || !$state = $user->state) {
+            return false;
+        }
+        return $state->updated_at->greaterThan(now()->subDay());
     }
 
     public function create(array $data)
