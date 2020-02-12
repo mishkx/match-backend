@@ -26,4 +26,6 @@ interface ChatContract
     public function createMessage(int $fromUserId, int $toUserId, string $content, string $token, string $sentAt, bool $fromFaker = false);
 
     public function createFakeMessage(int $fromUserId, int $toUserId, string $content, string $token, string $sentAt);
+
+    public function sendPresence(int $fromUserId, int $toUserId);
 }

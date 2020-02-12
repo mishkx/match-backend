@@ -174,4 +174,9 @@ class ChatService implements ChatContract
     {
         return $this->createMessage($fromUserId, $toUserId, $content, $token, $sentAt, true);
     }
+
+    public function sendPresence(int $fromUserId, int $toUserId)
+    {
+        $this->refreshParticipant($this->getParticipant($fromUserId, $toUserId));
+    }
 }

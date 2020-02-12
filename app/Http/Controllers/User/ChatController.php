@@ -81,7 +81,7 @@ class ChatController extends Controller
     /**
      * @OA\Post(
      *     tags={"Чат"},
-     *     operationId="chatsMessageSeng",
+     *     operationId="chatsMessageSend",
      *     summary="Отправить сообщение",
      *     path="/api/v1/chats/{id}/message",
      *     @OA\Parameter(
@@ -93,7 +93,7 @@ class ChatController extends Controller
      *          ),
      *     ),
      *     @OA\RequestBody(
-     *          description="Данные сообения",
+     *          description="Данные сообщения",
      *          required=true,
      *          @OA\JsonContent(ref="#/components/schemas/SendMessageRequest")
      *     ),
@@ -113,5 +113,30 @@ class ChatController extends Controller
             $request->get('token'),
             $request->get('sentAt')
         ));
+    }
+
+    /**
+     * @OA\Post(
+     *     tags={"Чат"},
+     *     operationId="chatsPresenceSend",
+     *     summary="Отправить оповещение о присутсивии в чате при получении сообщения",
+     *     path="/api/v1/chats/{id}/presence",
+     *     @OA\Parameter(
+     *          in="path",
+     *          name="id",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer",
+     *          ),
+     *     ),
+     *     @OA\Response(
+     *          description="Пустой ответ",
+     *          response=200,
+     *     ),
+     * )
+     */
+    public function sendPresence($id)
+    {
+        $this->chatService->sendPresence($this->authService->id(), $id);
     }
 }

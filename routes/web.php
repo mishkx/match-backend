@@ -67,6 +67,8 @@ Route::group(['prefix' => 'api/v1', 'as' => 'api.v1.'], function () {
         ->name('chats.single');
     Route::post('chats/{id}/message', 'User\ChatController@sendMessage')
         ->name('chats.message.send');
+    Route::post('chats/{id}/presence', 'User\ChatController@sendPresence')
+        ->name('chats.presence');
 
     Route::get('app/config', 'AppController@config')
         ->name('app.config');
