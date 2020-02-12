@@ -37,41 +37,43 @@ Route::group(['prefix' => 'api/v1', 'as' => 'api.v1.'], function () {
             ->name('swagger');
     });
 
-    Route::get('user', 'User\UserController@data')
-        ->name('user.data');
-    Route::put('user', 'User\UserController@update')
-        ->name('user.update');
-    Route::post('user/photo', 'User\UserPhotoController@add')
-        ->name('user.photo.add');
-    Route::delete('user/photo', 'User\UserPhotoController@delete')
-        ->name('user.photo.delete');
+    Route::group(['middleware' => 'auth'], function () {
+        Route::get('user', 'User\UserController@data')
+            ->name('user.data');
+        Route::put('user', 'User\UserController@update')
+            ->name('user.update');
+        Route::post('user/photo', 'User\UserPhotoController@add')
+            ->name('user.photo.add');
+        Route::delete('user/photo', 'User\UserPhotoController@delete')
+            ->name('user.photo.delete');
 
-    Route::get('recommendations', 'User\RecommendationController@collection')
-        ->name('recommendations.collection');
+        Route::get('recommendations', 'User\RecommendationController@collection')
+            ->name('recommendations.collection');
 
-    Route::post('choice/{id}/like', 'User\ChoiceController@like')
-        ->name('choice.like');
-    Route::post('choice/{id}/dislike', 'User\ChoiceController@dislike')
-        ->name('choice.dislike');
+        Route::post('choice/{id}/like', 'User\ChoiceController@like')
+            ->name('choice.like');
+        Route::post('choice/{id}/dislike', 'User\ChoiceController@dislike')
+            ->name('choice.dislike');
 
-    Route::get('matches', 'User\MatchController@collection')
-        ->name('matches.collection');
-    Route::get('matches/{id}', 'User\MatchController@single')
-        ->name('matches.single');
-    Route::delete('matches/{id}', 'User\MatchController@delete')
-        ->name('matches.delete');
+        Route::get('matches', 'User\MatchController@collection')
+            ->name('matches.collection');
+        Route::get('matches/{id}', 'User\MatchController@single')
+            ->name('matches.single');
+        Route::delete('matches/{id}', 'User\MatchController@delete')
+            ->name('matches.delete');
 
-    Route::get('chats', 'User\ChatController@collection')
-        ->name('chats.collection');
-    Route::get('chats/{id}', 'User\ChatController@single')
-        ->name('chats.single');
-    Route::post('chats/{id}/message', 'User\ChatController@sendMessage')
-        ->name('chats.message.send');
-    Route::post('chats/{id}/presence', 'User\ChatController@sendPresence')
-        ->name('chats.presence');
+        Route::get('chats', 'User\ChatController@collection')
+            ->name('chats.collection');
+        Route::get('chats/{id}', 'User\ChatController@single')
+            ->name('chats.single');
+        Route::post('chats/{id}/message', 'User\ChatController@sendMessage')
+            ->name('chats.message.send');
+        Route::post('chats/{id}/presence', 'User\ChatController@sendPresence')
+            ->name('chats.presence');
 
-    Route::get('app/config', 'AppController@config')
-        ->name('app.config');
+        Route::get('app/config', 'AppController@config')
+            ->name('app.config');
+    });
 });
 
 Route::group(['middleware' => ['auth', 'user.password.missed', 'throttle', 'user.fake.state']], function () {
